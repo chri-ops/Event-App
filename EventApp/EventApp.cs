@@ -49,6 +49,11 @@ namespace EventApp
             Console.Write("Password: ");
             string inputPassword = Console.ReadLine();
 
+            if (inputPassword == )
+            {
+
+            }
+
         }
         private void CreateAccount()
         {
