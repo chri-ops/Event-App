@@ -32,7 +32,8 @@ namespace EventApp
                     break;
                 case "2":
                     //Skapa konto
-                    Console.WriteLine("Skapa konto skräm");
+                    Registration();
+                    Console.WriteLine("Visa anvädarmeny" + LoggedInUser);
                     break;
                 default:
                     break;
@@ -51,10 +52,11 @@ namespace EventApp
             string inputPassword = Console.ReadLine();
 
             Console.WriteLine("AnvädarMeny");
+            
             Console.WriteLine(" 1. Skapa event");
             Console.WriteLine(" 2. Lista Evens");
             Console.WriteLine(" 3. logga ut");
-            Console.Write("välj:");
+            
 
 
 
@@ -65,6 +67,10 @@ namespace EventApp
                 case "1":
                     CreatEvent();
                     break;
+                case "2":
+                    EventList();
+                  
+                    break;
                 default:
                     break;
             }
@@ -73,45 +79,38 @@ namespace EventApp
 
 
         }
-        private void CreatEvent ()
+        private void Registration()
         {
-            Console.Write("Fyll i Evetens Namn");
-            Console.WriteLine("Namn");
-            Console.WriteLine("Tid");
-            Console.WriteLine("Datum");
-            Console.WriteLine("");
-
             Console.WriteLine("Registrera ett nytt konto");
+            
+            while (true)
+            {
+                Console.Write("Fyll i användernamn: "); 
+                string inputUserName = Console.ReadLine();
 
 
-            Console.Write("Fyll i användernamn: ");
-            string inputUserName = Console.ReadLine();
+                
+               
+                
+                break;
 
+            }
             while (true)
             {
                 Console.Write("Fyll i din E-mail: ");
                 string inputMail = Console.ReadLine();
-
-                //if (inputMail == ) // har ska vi Kolla om mailet är redan registrarat 
+                //if (inputMail == ) // har ska vi Kolla om mailet är redan registrarat
                 //{
-
                 //}
                 //else
                 //{
-
                 //}
                 break;
             }
-
-
-
-
             while (true)
             {
-
                 Console.Write("Fyll i Lössenord: ");
                 string inputPassword = Console.ReadLine();
-
                 if (inputPassword.Length < 6)
                 {
                     Console.WriteLine("Lösenordet är för kort!");
@@ -122,7 +121,36 @@ namespace EventApp
                     // Spara lösenord i användare
                     break;
                 }
+
             }
+        }
+
+       
+        private void CreatEvent()
+        {
+            
+            Console.Write("Fyll i Evetens Namn: ");
+            
+            String Name = Console.ReadLine();
+            Console.Write("Tid: ");
+            string Time = Console.ReadLine();
+            Console.Write("Datum: ");
+            string Date = Console.ReadLine();
+            Console.WriteLine("välj Event type: ");
+
+
+           
+           
+
+
+        }
+        private void EventList()
+        {
+            Console.WriteLine("Lista event");
+            Console.WriteLine("Välj ett specifikt: ");
+
+           
+            
         }
     }
 }
