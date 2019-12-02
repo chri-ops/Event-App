@@ -27,6 +27,7 @@ namespace EventApp
                 case "1":
                     Console.WriteLine("Loggin skräm");
                     Loggin();
+
                     //Logga in
                     break;
                 case "2":
@@ -49,14 +50,37 @@ namespace EventApp
             Console.Write("Password: ");
             string inputPassword = Console.ReadLine();
 
-            if (inputPassword == )
-            {
+            Console.WriteLine("AnvädarMeny");
+            Console.WriteLine(" 1. Skapa event");
+            Console.WriteLine(" 2. Lista Evens");
+            Console.WriteLine(" 3. logga ut");
+            Console.Write("välj:");
 
+
+
+            string input = Console.ReadLine();
+
+            switch (input)
+            {
+                case "1":
+                    CreatEvent();
+                    break;
+                default:
+                    break;
             }
 
+
+
+
         }
-        private void CreateAccount()
+        private void CreatEvent ()
         {
+            Console.Write("Fyll i Evetens Namn");
+            Console.WriteLine("Namn");
+            Console.WriteLine("Tid");
+            Console.WriteLine("Datum");
+            Console.WriteLine("");
+
 
         }
     }
