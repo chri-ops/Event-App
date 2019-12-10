@@ -7,13 +7,15 @@ namespace EventApp
     class User
     {
         public int Id;
-        public string Username;
-        private string password;
+        public string UserName;
+        public string Email;
+        private string Password;
 
-        public bool CheckPassword(string Password)
+
+        public bool CheckPassword(string password)
         {
             bool isPasswordValid;
-            if(Password == password)
+            if(password == Password)
             {
                 isPasswordValid = true;
             }
@@ -22,6 +24,16 @@ namespace EventApp
                 isPasswordValid = false;
             }
             return isPasswordValid;
+        }
+
+        public void SetPassword(string password)
+        {
+            Password = password;
+        }
+
+        public string GetPassword()
+        {
+            return Password;
         }
     }
 }
