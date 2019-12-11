@@ -215,7 +215,103 @@ namespace EventApp
                     myConnection.Close(); // Stäng uppkopplingen till db
                 }
             }
-            return eventlist; // Returnera lista på alla användare i databasen
+            return eventlist; // Returnera lista på alla event i databasen
+        }
+
+        public Event ListEventByEventId(int inputId)
+        {
+            string sqlQuery = "SELECT [Event].EventName, [Event].[Location], [Event].[Date], [Event].[Price], [User].[Username], [EventType].[TypeName] FROM [Event] LEFT JOIN [User] ON [User].[Id] = [Event].[UserId] LEFT JOIN [EventType] ON [Event].[EventTypeId] = [EventType].[Id] WHERE [Event].[Id] = @value1"; // Query
+
+            // --SELECT * FROM[User]
+            //-- LEFT JOIN[Role] ON[User].[RoleId] = [Role].[Id]
+            //--SELECT* FROM[Role];
+
+            Event Event = new Event(); // Objekt för att hämta event
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Förbered uppkoppling databas
+            {
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, myConnection); // Förbered query
+
+                sqlCommand.Parameters.AddWithValue("@value1", inputId); // Lägg till value i query
+
+                myConnection.Open(); // Öppna koppling
+
+                using (SqlDataReader dataReader = sqlCommand.ExecuteReader()) // Kör query
+                {
+                    if (dataReader.Read()) // Läs svar (alla rader)
+                    {
+                        // Event.Id = int.Parse(dataReader["Id"].ToString()); // Sätt Id från databas
+                        Event.EventName = dataReader["EventName"].ToString(); // Sätt EventName från databas
+                        Event.Location = dataReader["Location"].ToString(); // Sätt Location från databas
+                        Event.Date = Convert.ToDateTime(dataReader["Date"]).ToString("yyyy/MM/dd"); // Sätt Date från databas
+                        Event.Price = int.Parse(dataReader["Price"].ToString()); // Sätt Price från databas
+                        // Convert.ToDateTime(MyReader["DateField"]).ToString("dd/MM/yyyy");                   
+                        Event.EventTypeFromId = dataReader["TypeName"].ToString(); // Sätt EventTypeId från databas
+                        Event.EventCreatorByUserId = dataReader["UserName"].ToString(); // Sätt UserId från databas
+                    }
+
+                    myConnection.Close(); // Stäng uppkopplingen till db
+                }
+            }
+            return Event; // Returnerar valt event
+        }
+
+        public List<Message> GetMessageListByEventId(int inputId)
+        {
+            string sqlQuery = "SELECT * FROM [Message] WHERE EventId = @value1"; // Query
+
+            List<Message> MessageList = new List<Message>(); // Objekt för att hämta event
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Förbered uppkoppling databas
+            {
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, myConnection); // Förbered query
+
+                sqlCommand.Parameters.AddWithValue("@value1", inputId); // Lägg till value i query
+
+                myConnection.Open(); // Öppna koppling
+
+                using (SqlDataReader dataReader = sqlCommand.ExecuteReader()) // Kör query
+                {
+                    while (dataReader.Read()) // Läs svar (alla rader)
+                    {
+                        Message ChosenMessage = new Message();
+                        ChosenMessage.Id = int.Parse(dataReader["Id"].ToString()); // Sätt Id från databas
+                        ChosenMessage.Text = dataReader["Message"].ToString(); // Sätt Text från databas
+                        ChosenMessage.UserId = int.Parse(dataReader["UserId"].ToString()); // Sätt UserId från databas
+                        ChosenMessage.EventId = int.Parse(dataReader["EventId"].ToString()); // Sätt EventId från databas
+                        MessageList.Add(ChosenMessage);
+                    }
+
+                    myConnection.Close(); // Stäng uppkopplingen till db
+                }
+            }
+            return MessageList; // Returnerar valt event
+        }
+
+        public void AddMessageByEventIdAndUserId(string inputMessage, int EventId, int UserId)
+        {
+            string sqlQuery = "INSERT INTO [Message] ([Message], [EventId], [UserId]) VALUES (@value1, @value2, @value3)"; // Query
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Förbered uppkoppling databas
+            {
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, myConnection); // Förbered query
+
+                sqlCommand.Parameters.AddWithValue("@value1", inputMessage); // Lägg till value i query
+                sqlCommand.Parameters.AddWithValue("@value2", EventId); // Lägg till value i query
+                sqlCommand.Parameters.AddWithValue("@value3", UserId); // Lägg till value i query
+
+                myConnection.Open(); // Öppna koppling
+
+                using (SqlDataReader dataReader = sqlCommand.ExecuteReader()) // Kör query
+                {
+                    if (dataReader.Read()) // Läs svar (alla rader)
+                    {
+
+                    }
+
+                    myConnection.Close(); // Stäng uppkopplingen till db
+                }
+            }
         }
     }
 }

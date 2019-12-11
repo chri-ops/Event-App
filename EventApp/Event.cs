@@ -13,6 +13,8 @@ namespace EventApp
         public int Price;
         public int EventTypeId;
         public int UserId;
+        public string EventTypeFromId;
+        public string EventCreatorByUserId;
 
         public void ShowEventInformation()
         {

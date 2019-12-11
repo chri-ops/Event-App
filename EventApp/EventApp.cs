@@ -17,7 +17,7 @@ namespace EventApp
         {
             while (true)
             {
-                Console.WriteLine("\n* START-MENY *\n");
+                Console.WriteLine("\n\n* START-MENY *\n");
                 Console.WriteLine("  1. Logga in");
                 Console.WriteLine("  2. Skapa användarkonto");
                 Console.WriteLine("  3. Avsluta programmet");
@@ -27,18 +27,22 @@ namespace EventApp
                 switch (inputKey.KeyChar)
                 {
                     case '1':
+                        Console.WriteLine("\n");
                         ShowLoginScreen();
                         break;
 
                     case '2':
+                        Console.WriteLine("\n");
                         CreateUserAccount();
                         break;
 
                     case '3':
+                        Console.WriteLine("\n");
                         Console.WriteLine("\nAvslutar programmet...");
                         return;
 
                     default:
+                        Console.WriteLine("\n");
                         break;
                 }
             }
@@ -48,12 +52,14 @@ namespace EventApp
         {
             while (true)
             {
-                Console.WriteLine("\n* LOGGA IN *\n");
+                Console.WriteLine("\n\n* LOGGA IN *\n");
                 Console.Write("Skriv in ditt användarnamn: ");
                 string inputUserName = Console.ReadLine();
 
                 Console.Write("Skriv in ditt Lösenord: ");
                 string inputPassword = Console.ReadLine();
+
+                Console.WriteLine("\n\n");
 
                 User userInDatabase = new User();
                 Database db = new Database();
@@ -88,13 +94,15 @@ namespace EventApp
         {
             while (true)
             {
-                Console.WriteLine("\n* ANVÄNDARMENY - Inloggad som " + LoggedInUser.UserName + " *");
+                Console.WriteLine("\n* ANVÄNDARMENY - Inloggad som " + LoggedInUser.UserName + " *\n");
 
                 Console.WriteLine(" 1. Skapa ett event");
                 Console.WriteLine(" 2. Lista events");
                 Console.WriteLine(" 3. Logga ut");
 
                 var inputKey = Console.ReadKey();
+
+                Console.WriteLine("\n\n");
 
                 switch (inputKey.KeyChar)
                 {
@@ -132,7 +140,7 @@ namespace EventApp
                 Database db1 = new Database();
                 User userInDatabase = new User();
                 userInDatabase = db1.GetUserByUserName(inputUserName);
-                
+
                 if (userInDatabase != null)
                 {
                     Console.WriteLine("\nTyvärr, en användare med detta användarnamn finns redan, välj ett annat.");
@@ -228,14 +236,63 @@ namespace EventApp
 
             Console.WriteLine("\nTryck valfri tangent för att lista alla events ur databasen...");
             Console.ReadKey();
+            Console.WriteLine("\n");
 
             for (int i = 0; i < eventlist.Count; i++)
             {
-                Console.WriteLine(eventlist[i].Id + ". " + eventlist[i].EventName + " : " + eventlist[i].Location + " : " + eventlist[i].Date + " : " + eventlist[i].Price + " : " + eventlist[i].EventTypeId);
+                // Console.WriteLine(eventlist[i].Id + ". " + eventlist[i].EventName + " : " + eventlist[i].Location + " : " + eventlist[i].Date + " : " + eventlist[i].Price + " : " + eventlist[i].EventTypeId);
+                Console.WriteLine(eventlist[i].Id + ". " + eventlist[i].EventName);
             }
 
             Console.WriteLine("\nFör att välja ett event tryck på dess Id-nummer.");
-            Console.ReadKey();
+            Console.Write("\nFör att gå tillbaka, tryck 'X': ");
+            string inputIndex = Console.ReadLine();
+            Console.WriteLine("\n\n");
+            if (inputIndex == "X" || inputIndex == "x")
+            {
+                return;
+            }
+            int inputId = int.Parse(inputIndex);
+            Event SelectedEvent = db.ListEventByEventId(inputId);
+            Console.WriteLine("\n\n" + SelectedEvent.EventName + " / Plats: " + SelectedEvent.Location + " / Datum: " + SelectedEvent.Date + " / Pris: " + SelectedEvent.Price + " / Eventtyp: " + SelectedEvent.EventTypeFromId + " / Skapad av: " + SelectedEvent.EventCreatorByUserId);
+            // Console.WriteLine("Eventtyp: ");
+            Console.WriteLine("\nTryck 'E' för att visa eventwall (och kunna skriva in meddelande), eller valfri tangent för att gå tillbaks...");
+            var inputKey2 = Console.ReadKey();
+            if (inputKey2.KeyChar == 'E' || inputKey2.KeyChar == 'e')
+            {
+                List<Message> MessageList = new List<Message>();
+                MessageList = db.GetMessageListByEventId(inputId);
+
+                Console.WriteLine("\n\n");
+                for (int i = 0; i < MessageList.Count; i++)
+                {
+                    Console.WriteLine(MessageList[i].Id + ". --- " + MessageList[i].Text + " --- / EventId: " + MessageList[i].EventId + " / UserId: " + MessageList[i].UserId);
+                    Console.WriteLine("\n\n");
+                }
+                if (MessageList.Count == 0)
+                {
+                    Console.WriteLine("Inga meddelanden skrivna ännu på denna eventwall!");
+                }
+
+                Console.Write("\nFör att lägga till ett meddelande i denna eventwall, tryck 'L' eller valfri tangent för att gå tillbaks: ");
+                var inputKey3 = Console.ReadKey();
+                Console.WriteLine("\n\n");
+                if (inputKey3.KeyChar == 'L' || inputKey3.KeyChar == 'l')
+                {
+                    Console.Write("\nSkriv in meddelande, tryck sedan ENTER: ");
+                    string inputMessage = Console.ReadLine();
+                    db.AddMessageByEventIdAndUserId(inputMessage, inputId, LoggedInUser.Id);
+                    Console.WriteLine("\nMeddelande sparat i eventets wall!");
+                    Console.WriteLine("\n\nTryck valfri tangent för att gå tillbaks...");
+                    Console.ReadKey();
+                    Console.WriteLine("\n\n");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n\n");
+                return;
+            }
         }
     }
 }
