@@ -86,7 +86,7 @@ namespace EventApp
             }
         }
 
-        public void ShowUserMenu()
+        private void ShowUserMenu()
         {
             while (true)
             {
@@ -120,7 +120,7 @@ namespace EventApp
             }
         }
 
-        public void CreateUserAccount()
+        private void CreateUserAccount()
         {
             // Console.Clear();
             Console.WriteLine("\n* SKAPA ANVÄNDARKONTO *");
