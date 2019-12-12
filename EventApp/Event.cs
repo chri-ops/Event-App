@@ -16,9 +16,21 @@ namespace EventApp
         public string EventTypeFromId;
         public string EventCreatorByUserId;
 
-        public void ShowEventInformation()
+        //public void ShowEventInformation()
+        //{
+        //    Console.WriteLine("Skriv kod för att visa event-information. (ej färdigkodat");
+        //}
+
+        public void ShowParticipants()
         {
-            Console.WriteLine("Skriv kod för att visa event-information. (ej färdigkodat");
+            Console.WriteLine("\nVisar alla deltagare i eventet...\n");
+            Database db = new Database();
+            List<Participant> listOfParticipants = new List<Participant>();
+            listOfParticipants = db.GetParticipantsByEventId(Id);
+            for (int i = 0; i < listOfParticipants.Count; i++)
+            {
+                Console.WriteLine(listOfParticipants[i].UserNameFromUserId);
+            }
         }
     }
 }

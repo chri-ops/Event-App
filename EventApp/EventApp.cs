@@ -27,22 +27,18 @@ namespace EventApp
                 switch (inputKey.KeyChar)
                 {
                     case '1':
-                        Console.WriteLine("\n");
                         ShowLoginScreen();
                         break;
 
                     case '2':
-                        Console.WriteLine("\n");
                         CreateUserAccount();
                         break;
 
                     case '3':
-                        Console.WriteLine("\n");
                         Console.WriteLine("\nAvslutar programmet...");
                         return;
 
                     default:
-                        Console.WriteLine("\n");
                         break;
                 }
             }
@@ -59,7 +55,7 @@ namespace EventApp
                 Console.Write("Skriv in ditt Lösenord: ");
                 string inputPassword = Console.ReadLine();
 
-                Console.WriteLine("\n\n");
+                Console.WriteLine("\n");
 
                 User userInDatabase = new User();
                 Database db = new Database();
@@ -94,15 +90,16 @@ namespace EventApp
         {
             while (true)
             {
-                Console.WriteLine("\n* ANVÄNDARMENY - Inloggad som " + LoggedInUser.UserName + " *\n");
+                Console.WriteLine("\n\n* ANVÄNDARMENY - Inloggad som " + LoggedInUser.UserName + " *\n");
 
                 Console.WriteLine(" 1. Skapa ett event");
                 Console.WriteLine(" 2. Lista events");
                 Console.WriteLine(" 3. Logga ut");
 
-                var inputKey = Console.ReadKey();
+                Console.WriteLine("\n");
 
-                Console.WriteLine("\n\n");
+                var inputKey = Console.ReadKey();
+                               
 
                 switch (inputKey.KeyChar)
                 {
@@ -200,9 +197,7 @@ namespace EventApp
             newEvent.Date = Console.ReadLine();
             Console.Write("Pris för deltagande: ");
             newEvent.Price = int.Parse(Console.ReadLine());
-            Console.WriteLine("Välj eventtyp: ");
-            Console.WriteLine("Tryck valfri tangent för att lista eventtyper ur databas.");
-            Console.ReadKey();
+            Console.WriteLine("Välj eventtyp: \n");
             ListEventTypes();
             Console.WriteLine("Välj vilken eventtyp (med siffror): ");
             newEvent.EventTypeId = int.Parse(Console.ReadLine());
@@ -233,9 +228,6 @@ namespace EventApp
             Database db = new Database();
             List<Event> eventlist = new List<Event>();
             eventlist = db.GetAllEvents();
-
-            Console.WriteLine("\nTryck valfri tangent för att lista alla events ur databasen...");
-            Console.ReadKey();
             Console.WriteLine("\n");
 
             for (int i = 0; i < eventlist.Count; i++)
@@ -244,55 +236,141 @@ namespace EventApp
                 Console.WriteLine(eventlist[i].Id + ". " + eventlist[i].EventName);
             }
 
-            Console.WriteLine("\nFör att välja ett event tryck på dess Id-nummer.");
-            Console.Write("\nFör att gå tillbaka, tryck 'X': ");
+            Console.WriteLine("\nFör att välja ett event tryck på dess Id-nummer...");
+            Console.WriteLine("Tryck 'X' för att gå tillbaks!\n");
             string inputIndex = Console.ReadLine();
-            Console.WriteLine("\n\n");
             if (inputIndex == "X" || inputIndex == "x")
             {
                 return;
             }
             int inputId = int.Parse(inputIndex);
             Event SelectedEvent = db.ListEventByEventId(inputId);
-            Console.WriteLine("\n\n" + SelectedEvent.EventName + " / Plats: " + SelectedEvent.Location + " / Datum: " + SelectedEvent.Date + " / Pris: " + SelectedEvent.Price + " / Eventtyp: " + SelectedEvent.EventTypeFromId + " / Skapad av: " + SelectedEvent.EventCreatorByUserId);
+            // Console.WriteLine("Värde på inputId: " + inputId);
+            Console.WriteLine("\n" + SelectedEvent.EventName + " / Plats: " + SelectedEvent.Location + " / Datum: " + SelectedEvent.Date + " / Pris: " + SelectedEvent.Price + " / Eventtyp: " + SelectedEvent.EventTypeFromId + " / Skapad av: " + SelectedEvent.EventCreatorByUserId);
             // Console.WriteLine("Eventtyp: ");
-            Console.WriteLine("\nTryck 'E' för att visa eventwall (och kunna skriva in meddelande), eller valfri tangent för att gå tillbaks...");
-            var inputKey2 = Console.ReadKey();
-            if (inputKey2.KeyChar == 'E' || inputKey2.KeyChar == 'e')
+            //Console.Write("Visa valmeny för detta event? (J/N)");
+            //var inputKey4 = Console.ReadKey();
+            //if (inputKey4.KeyChar == 'J' || inputKey4.KeyChar == 'j')
+            //{
+            ShowSpecificEventMenu(SelectedEvent);
+            //}
+        }
+
+        public void ShowSpecificEventMenu(Event SelectedEvent)
+        {
+            while (true)
             {
+                Console.WriteLine("\n * EVENTMENY FÖR DETTA EVENT (Id: " + SelectedEvent.Id + ") *\n");
+                Console.WriteLine(" 1. Deltag");
+                Console.WriteLine(" 2. Visa deltagare");
+                Console.WriteLine(" 3. Visa eventwall");
+                // Console.WriteLine(" 4. Redigera event");
+                Console.WriteLine(" 4. Ta bort event");
+                Console.WriteLine(" 5. Gå tillbaks...");
+                Console.WriteLine("\n");
+                var inputKey = Console.ReadKey();
+
+                switch (inputKey.KeyChar)
+                {
+                    case '1':
+                        {
+                            LoggedInUser.AttendEvent(SelectedEvent.Id, LoggedInUser.Id);
+                            Console.WriteLine("\nTryck valfri tangent för att gå tillbaks till menyn...");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                    case '2':
+                        {
+                            SelectedEvent.ShowParticipants();
+                            Console.WriteLine("\nTryck valfri tangent för att gå tillbaks till menyn...");
+                            Console.ReadKey();
+                            break;
+                        }
+                    case '3':
+                        {
+                            ShowEventWall(SelectedEvent.Id);
+                            Console.WriteLine("\nTryck valfri tangent för att gå tillbaks till menyn...");
+                            Console.ReadKey();
+                            break;
+                        }
+                    //case '4':
+                    //    {
+                    //        Console.WriteLine("Du kan fortfarande inte redigera events i denna version av programmet.");
+                    //        Console.WriteLine("Tryck valfri tangent för att gå tillbaks...");
+                    //        Console.ReadKey();
+                    //}
+
+                    case '4':
+                        {
+                            if (SelectedEvent.UserId == LoggedInUser.Id)
+                            {
+                                Console.WriteLine("\nÄr du säker på att du vill ta bort valt event? (J/N)");
+                                var inputKey4 = Console.ReadKey();
+                                if (inputKey4.KeyChar == 'J' || inputKey4.KeyChar == 'j')
+                                {
+                                    Database db = new Database();
+                                    db.DeleteEventByEventId(SelectedEvent.Id);
+                                    Console.WriteLine("\nEventet borttaget!");
+                                }
+                                return;
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nDu är inte skapare av eventet och kan därför inte ta bort det!");
+                                Console.WriteLine("Tryck valfri tangent...");
+                                Console.ReadKey();
+                                break;
+                            }
+                        }
+
+                    case '5':
+                        {
+                            return;
+                        }
+                }
+            }
+
+            // ShowEventWall(inputId);
+        }
+
+        public void ShowEventWall(int inputId)
+        {
+            Database db = new Database();
+            // Console.WriteLine("\nTryck 'E' för att visa eventwall (och kunna skriva in meddelande), eller valfri tangent för att gå tillbaks...");
+            // var inputKey2 = Console.ReadKey();
+            // if (inputKey2.KeyChar == 'E' || inputKey2.KeyChar == 'e')
+            // {
                 List<Message> MessageList = new List<Message>();
                 MessageList = db.GetMessageListByEventId(inputId);
 
-                Console.WriteLine("\n\n");
+                Console.WriteLine("\n");
                 for (int i = 0; i < MessageList.Count; i++)
                 {
-                    Console.WriteLine(MessageList[i].Id + ". --- " + MessageList[i].Text + " --- / EventId: " + MessageList[i].EventId + " / UserId: " + MessageList[i].UserId);
-                    Console.WriteLine("\n\n");
+                    Console.WriteLine("Meddelande: " + MessageList[i].Text + " - Av: " + MessageList[i].UserNameByUserId);
+                    Console.WriteLine("\n");
                 }
                 if (MessageList.Count == 0)
                 {
                     Console.WriteLine("Inga meddelanden skrivna ännu på denna eventwall!");
                 }
 
-                Console.Write("\nFör att lägga till ett meddelande i denna eventwall, tryck 'L' eller valfri tangent för att gå tillbaks: ");
+                Console.Write("\nVill du göra ett inlägg på eventwallen? (J/N) ");
                 var inputKey3 = Console.ReadKey();
-                Console.WriteLine("\n\n");
-                if (inputKey3.KeyChar == 'L' || inputKey3.KeyChar == 'l')
+                Console.WriteLine("\n");
+                if (inputKey3.KeyChar == 'J' || inputKey3.KeyChar == 'j')
                 {
                     Console.Write("\nSkriv in meddelande, tryck sedan ENTER: ");
                     string inputMessage = Console.ReadLine();
                     db.AddMessageByEventIdAndUserId(inputMessage, inputId, LoggedInUser.Id);
                     Console.WriteLine("\nMeddelande sparat i eventets wall!");
-                    Console.WriteLine("\n\nTryck valfri tangent för att gå tillbaks...");
-                    Console.ReadKey();
-                    Console.WriteLine("\n\n");
                 }
-            }
-            else
-            {
-                Console.WriteLine("\n\n");
-                return;
-            }
+            // }
+            //else
+            //{
+            //    Console.WriteLine("\n");
+            //    return;
+            //}
         }
     }
 }

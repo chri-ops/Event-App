@@ -220,7 +220,7 @@ namespace EventApp
 
         public Event ListEventByEventId(int inputId)
         {
-            string sqlQuery = "SELECT [Event].EventName, [Event].[Location], [Event].[Date], [Event].[Price], [User].[Username], [EventType].[TypeName] FROM [Event] LEFT JOIN [User] ON [User].[Id] = [Event].[UserId] LEFT JOIN [EventType] ON [Event].[EventTypeId] = [EventType].[Id] WHERE [Event].[Id] = @value1"; // Query
+            string sqlQuery = "SELECT [Event].[Id], [Event].EventName, [Event].[Location], [Event].[Date], [Event].[Price], [User].[Username], [EventType].[TypeName] FROM [Event] LEFT JOIN [User] ON [User].[Id] = [Event].[UserId] LEFT JOIN [EventType] ON [Event].[EventTypeId] = [EventType].[Id] WHERE [Event].[Id] = @value1"; // Query
 
             // --SELECT * FROM[User]
             //-- LEFT JOIN[Role] ON[User].[RoleId] = [Role].[Id]
@@ -240,7 +240,7 @@ namespace EventApp
                 {
                     if (dataReader.Read()) // Läs svar (alla rader)
                     {
-                        // Event.Id = int.Parse(dataReader["Id"].ToString()); // Sätt Id från databas
+                        Event.Id = int.Parse(dataReader["Id"].ToString()); // Sätt Id från databas
                         Event.EventName = dataReader["EventName"].ToString(); // Sätt EventName från databas
                         Event.Location = dataReader["Location"].ToString(); // Sätt Location från databas
                         Event.Date = Convert.ToDateTime(dataReader["Date"]).ToString("yyyy/MM/dd"); // Sätt Date från databas
@@ -258,7 +258,7 @@ namespace EventApp
 
         public List<Message> GetMessageListByEventId(int inputId)
         {
-            string sqlQuery = "SELECT * FROM [Message] WHERE EventId = @value1"; // Query
+            string sqlQuery = "SELECT [Message].*, [User].[UserName] FROM [Message] LEFT JOIN [User] ON [Message].[UserId] = [User].[Id] WHERE EventId = @value1"; // Query
 
             List<Message> MessageList = new List<Message>(); // Objekt för att hämta event
 
@@ -279,6 +279,8 @@ namespace EventApp
                         ChosenMessage.Text = dataReader["Message"].ToString(); // Sätt Text från databas
                         ChosenMessage.UserId = int.Parse(dataReader["UserId"].ToString()); // Sätt UserId från databas
                         ChosenMessage.EventId = int.Parse(dataReader["EventId"].ToString()); // Sätt EventId från databas
+                        // ChosenMessage.EventNameByEventId = dataReader["EventName"].ToString();
+                        ChosenMessage.UserNameByUserId = dataReader["UserName"].ToString();
                         MessageList.Add(ChosenMessage);
                     }
 
@@ -299,6 +301,122 @@ namespace EventApp
                 sqlCommand.Parameters.AddWithValue("@value1", inputMessage); // Lägg till value i query
                 sqlCommand.Parameters.AddWithValue("@value2", EventId); // Lägg till value i query
                 sqlCommand.Parameters.AddWithValue("@value3", UserId); // Lägg till value i query
+
+                myConnection.Open(); // Öppna koppling
+
+                using (SqlDataReader dataReader = sqlCommand.ExecuteReader()) // Kör query
+                {
+                    if (dataReader.Read()) // Läs svar (alla rader)
+                    {
+
+                    }
+
+                    myConnection.Close(); // Stäng uppkopplingen till db
+                }
+            }
+        }
+
+        public bool IsAlreadyParticipating(int UserId, int EventId)
+        {
+            bool exist = false;
+            string sqlQuery = "SELECT * FROM [Participant] WHERE [UserId] = @value1 AND [EventId] = @value2"; // Query
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Förbered uppkoppling
+            {
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, myConnection); // Förbered query med databas
+
+                sqlCommand.Parameters.AddWithValue("@value1", UserId); // Lägg till value i query
+                sqlCommand.Parameters.AddWithValue("@value2", EventId); // Lägg till value i query
+
+                myConnection.Open(); // Öppna uppkoppling till databas
+
+                using (SqlDataReader dataReader = sqlCommand.ExecuteReader()) // Kör query
+                {
+                    if (dataReader.Read()) // Läs svar från databas (första rad)
+                    {
+                        exist = true;
+                    }
+
+                    myConnection.Close(); // Stäng uppkoppling till dadabas
+                }
+            }
+
+            return exist; // Returnerar sannt om det finns användare med detta E-mail
+
+        }
+
+        public void SaveNewParticipant(Participant newParticipant)
+        {
+
+            string sqlQuery = "INSERT INTO [Participant] ([UserId], [EventId]) VALUES (@value1, @value2)"; // Query
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Förbered uppkoppling databas
+            {
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, myConnection); // Förbered query
+
+                sqlCommand.Parameters.AddWithValue("@value1", newParticipant.UserId); // Lägg till value i query
+                sqlCommand.Parameters.AddWithValue("@value2", newParticipant.EventId); // Lägg till value i query
+
+                myConnection.Open(); // Öppna koppling
+
+                using (SqlDataReader dataReader = sqlCommand.ExecuteReader()) // Kör query
+                {
+                    if (dataReader.Read()) // Läs svar (alla rader)
+                    {
+
+                    }
+
+                    myConnection.Close(); // Stäng uppkopplingen till db
+                }
+            }
+        }
+
+        public List<Participant> GetParticipantsByEventId(int EventId)
+        {
+            string sqlQuery = "SELECT [Participant].[Id], [Participant].[UserId], [Participant].[EventId], [User].[UserName], [Event].[EventName] FROM [Participant] LEFT JOIN [User] ON [Participant].[UserId] = [User].[Id] LEFT JOIN [Event] ON [Participant].[EventId] = [Event].[Id] WHERE [EventId] = @value"; // Query
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Förbered uppkoppling databas
+            {
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, myConnection); // Förbered query
+
+                List<Participant> listOfParticipants = new List<Participant>();
+
+                sqlCommand.Parameters.AddWithValue("@value", EventId); // Lägg till value i query
+
+                myConnection.Open(); // Öppna koppling
+
+                using (SqlDataReader dataReader = sqlCommand.ExecuteReader()) // Kör query
+                {
+                    while (dataReader.Read()) // Läs svar (alla rader)
+                    {
+                        Participant participant = new Participant();
+                        participant.Id = int.Parse(dataReader["Id"].ToString());
+                        participant.UserId = int.Parse(dataReader["UserId"].ToString());
+                        participant.EventId = int.Parse(dataReader["EventId"].ToString());
+                        participant.UserNameFromUserId = dataReader["UserName"].ToString();
+                        participant.EventNameFromEventId = dataReader["EventName"].ToString();
+                        
+                        listOfParticipants.Add(participant);
+                    }
+
+
+                    myConnection.Close(); // Stäng uppkopplingen till db
+                }
+                return listOfParticipants;
+            }
+        }
+
+        public void DeleteEventByEventId(int EventId)
+        {
+
+            string sqlQuery = "DELETE FROM [Event] WHERE Id = @value1"; // Query
+
+            using (SqlConnection myConnection = new SqlConnection(connectionString)) // Förbered uppkoppling databas
+            {
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, myConnection); // Förbered query
+
+                sqlCommand.Parameters.AddWithValue("@value1", EventId); // Lägg till value i query
+                //sqlCommand.Parameters.AddWithValue("@value2", newParticipant.EventId); // Lägg till value i query
 
                 myConnection.Open(); // Öppna koppling
 

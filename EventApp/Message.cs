@@ -10,5 +10,7 @@ namespace EventApp
         public string Text;
         public int UserId;
         public int EventId;
+        public string UserNameByUserId;
+        public string EventNameByEventId;
     }
 }
